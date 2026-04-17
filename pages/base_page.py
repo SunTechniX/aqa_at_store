@@ -1,2 +1,4 @@
 class BasePage:
-    pass
+
+    def __init__(self, page):
+        self.page = page
