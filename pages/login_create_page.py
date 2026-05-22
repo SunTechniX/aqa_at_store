@@ -1,9 +1,9 @@
 from playwright.sync_api import expect
 
-from at_store.api.urls import EP_BASE, EP_USER_CREATE
-from at_store.data.data_at_store import DATA_REGISTER_LOGIN, \
+from api.urls import EP_BASE, EP_USER_CREATE
+from data.data_at_store import DATA_REGISTER_LOGIN, \
     DATA_REGISTER_LOGIN_FULL
-from at_store.page.base_page import BasePage
+from pages.base_page import BasePage
 
 
 class LoginCreatePage(BasePage):
@@ -34,8 +34,15 @@ class LoginCreatePage(BasePage):
             "button", name="Continue"
             )
 
+        # self.field_csrftoken_create = self.page.locator("#AccountFrm input[name='csrftoken']")
+        # self.field_csrfinst_create = self.page.locator("#AccountFrm input[name='csrfinstance']")
+
+
     def open(self, url=EP_BASE + EP_USER_CREATE):
         self.page.goto(url)
+
+    def check_url(self, endpoint=EP_BASE + EP_USER_CREATE, www: bool = False):
+        super().check_url(endpoint, www)
 
     def get_hidden_input_value(self, name: str) -> str:
         """ Извлекает значение из hidden input по имени """
@@ -51,6 +58,14 @@ class LoginCreatePage(BasePage):
     def csrfinstance_create(self):
         return self.get_hidden_input_value("csrfinstance")
         # return self._get_value(self.field_csrfinst_create)
+
+    # @property
+    # def csrftoken_create(self):
+    #     return self.field_csrftoken_create.get_attribute("value")
+    #
+    # @property
+    # def csrfinstance_create(self):
+    #     return self.field_csrfinst_create.get_attribute("value")
 
     def fill_login_create_form(self, data_json: dict = DATA_REGISTER_LOGIN_FULL):
         self.field_firstname.fill(data_json["firstname"])

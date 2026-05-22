@@ -1,5 +1,5 @@
 from playwright.sync_api import Page, expect
-from at_store.data.data_at_store import BASE_URL_NO_WWW
+from data.data_at_store import BASE_URL, BASE_URL_NO_WWW
 
 
 class BasePage:
@@ -10,8 +10,9 @@ class BasePage:
     def open(self, url="/"):
         self.page.goto(url)
 
-    def check_url(self, endpoint="/index.html"):
-        expect(self.page).to_have_url(BASE_URL_NO_WWW + endpoint)
+    def check_url(self, endpoint="/index.html", www: bool = False):
+        _base_url = BASE_URL_NO_WWW if not www else BASE_URL
+        expect(self.page).to_have_url(_base_url + endpoint)
 
     def check_logined_via_cookie(self):
         """

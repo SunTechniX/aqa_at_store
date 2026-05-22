@@ -1,9 +1,9 @@
 import time
 from playwright.sync_api import APIRequestContext
 
-from at_store.data.data_at_store import BASE_URL
-from at_store.helpers.utils import extract_error_text
-from at_store.tests.test_register_fixed import extract_visible_errors
+from data.data_at_store import BASE_URL
+from helpers.utils import extract_error_text
+from tests.test_register_fixed import extract_visible_errors
 
 
 class ApiBaseCtx:
@@ -45,14 +45,34 @@ class ApiBaseCtx:
         self._check_status_code(expected_status_code)
         return self.response
 
-    def post_form2(self, endpoint: str, data_json: dict = None,
-                   expected_status_code: int = 200):
-        assert data_json is not None, "Тело не заполнено!"
-        print(f"\n{data_json=}")
-        headers_ = {"Content-Type": "application/x-www-form-urlencoded"}
-        self.response = self.session.post(url=endpoint, data=data_json, headers=headers_)
-        self._check_status_code(expected_status_code)
-        return self.response
+    # def post_form2(self, endpoint: str, data_json: dict = None,
+    #                expected_status_code: int = 200):
+    #     assert data_json is not None, "Тело не заполнено!"
+    #     print(f"\n{data_json=}")
+    #     headers_ = {"Content-Type": "application/x-www-form-urlencoded"}
+    #     self.response = self.session.post(url=endpoint, data=data_json, headers=headers_)
+    #     self._check_status_code(expected_status_code)
+    #     return self.response
+    #
+    # def post_form3(self, endpoint: str, data_json: dict = None,
+    #                expected_status_code: int = 200):
+    #     assert data_json is not None, "Тело не заполнено!"
+    #
+    #     print(f"🍪 Куки контекста: {[c['name'] for c in self.ctx.cookies()]}")
+    #     # Должны быть: AC_SF_..., csrftoken, и т.д.
+    #
+    #     print(f"\n{data_json=}")
+    #     # headers_ = {"Content-Type": "application/x-www-form-urlencoded"}
+    #     # ✅ Так (отправляет multipart/form-data как браузер):
+    #     data_multi = {k: {"value": v} for k, v in data_json.items()}
+    #     print(f"Ща отправлю: {data_multi=}")
+    #     self.response = self.session.post(
+    #         url=endpoint,
+    #         multipart=data_multi,
+    #         # headers=headers_
+    #         )
+    #     self._check_status_code(expected_status_code)
+    #     return self.response
 
     def close(self):
         pass

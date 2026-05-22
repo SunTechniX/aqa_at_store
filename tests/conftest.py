@@ -1,7 +1,7 @@
 import pytest
 from playwright.sync_api import sync_playwright, Browser
 
-from at_store.data.data_at_store import BASE_URL
+from data.data_at_store import BASE_URL
 
 
 @pytest.fixture
@@ -19,7 +19,9 @@ def context(driver):
 
 @pytest.fixture
 def page(context):
-    return context.new_page()
+    _page = context.new_page()
+    _page.set_default_timeout(8_000)
+    return _page
 
 
 # conftest.py

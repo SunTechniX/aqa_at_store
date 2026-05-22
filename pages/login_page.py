@@ -1,6 +1,6 @@
-from at_store.api.urls import EP_BASE, EP_USER_LOGIN
-from at_store.data.data_at_store import DATA_LOGIN
-from at_store.page.base_page import BasePage
+from api.urls import EP_BASE, EP_USER_LOGIN
+from data.data_at_store import DATA_LOGIN
+from pages.base_page import BasePage
 
 
 class LoginPage(BasePage):
@@ -17,13 +17,16 @@ class LoginPage(BasePage):
             )
         # self.field_csrftoken = self.page.locator("[name='csrftoken']")
         # self.field_csrfinst = self.page.locator("[name='csrfinstance']")
-        self.field_csrftoken_create = self.page.locator("#AccountFrm input[name='csrftoken']")
-        self.field_csrfinst_create = self.page.locator("#AccountFrm input[name='csrfinstance']")
+        # self.field_csrftoken_create = self.page.locator("#AccountFrm input[name='csrftoken']")
+        # self.field_csrfinst_create = self.page.locator("#AccountFrm input[name='csrfinstance']")
         self.field_csrftoken_login = self.page.locator("#loginFrm input[name='csrftoken']")
         self.field_csrfinst_login = self.page.locator("#loginFrm input[name='csrfinstance']")
 
     def open(self, url=EP_BASE + EP_USER_LOGIN):
         self.page.goto(url)
+
+    def check_url(self, endpoint=EP_BASE + EP_USER_LOGIN, www: bool = False):
+        super().check_url(endpoint, www)
 
     def fill_login_form(self, data_dict: dict = DATA_LOGIN):
         self.field_name.fill(data_dict["loginname"])
@@ -44,13 +47,13 @@ class LoginPage(BasePage):
             items = loc.get_attribute("value", timeout=7_000)
         return items
 
-    @property
-    def csrftoken_create(self):
-        return self._get_value(self.field_csrftoken_create)
-
-    @property
-    def csrfinstance_create(self):
-        return self._get_value(self.field_csrfinst_create)
+    # @property
+    # def csrftoken_create(self):
+    #     return self._get_value(self.field_csrftoken_create)
+    #
+    # @property
+    # def csrfinstance_create(self):
+    #     return self._get_value(self.field_csrfinst_create)
 
     @property
     def csrftoken_login(self):

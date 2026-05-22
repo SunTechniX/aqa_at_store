@@ -1,7 +1,7 @@
-from at_store.api.base_api import ApiBaseCtx
-from at_store.api.urls import EP_BASE, EP_USER_CREATE, EP_USER_SUCCESS, \
+from api.base_api import ApiBaseCtx
+from api.urls import EP_BASE, EP_USER_CREATE, EP_USER_SUCCESS, \
     EP_USER_LOGIN
-from at_store.data.data_at_store import BASE_URL
+from data.data_at_store import BASE_URL
 
 
 class ApiStore(ApiBaseCtx):
