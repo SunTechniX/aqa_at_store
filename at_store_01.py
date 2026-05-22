@@ -1,5 +1,5 @@
 import json
-from playwright.sync_api import sync_playwright, expect
+from playwright.async_api import sync_playwright, expect
 
 
 # https://automationteststore.com/index.php?rt=r/product/product/addToCart

@@ -1,3 +1,4 @@
+import asyncio
 from api.store_api import ApiStore
 from api.urls import EP_BASE, EP_USER_CABINET
 from data.data_at_store import DATA_REGISTER_LOGIN, DATA_LOGIN, \
@@ -11,7 +12,7 @@ from pages.main_page import MainPage
 class TestAT:
 
     @staticmethod
-    def interceptor(route):
+    async def interceptor(route):
         if route.request.resource_type not in ("font", "image", "script",
                                                "stylesheet", "xhr", "other"):
             print(f"🔍 {route.request.method} {route.request.url} [{route.request.resource_type}]")
@@ -30,37 +31,37 @@ class TestAT:
                     print(route.request.__dict__)
         route.continue_()
 
-    def test_01_at_login_simple(self, context, page):  # driver
+    async def test_01_at_login_simple(self, context, page):  # driver
         """ Просто Web-логин с имеющимся пользователем """
-        context.route("**/*", self.interceptor)  # перехват своих api + страницы
+        await context.route("**/*", self.interceptor)  # перехват своих api + страницы
         at = MainPage(page)
         print()
         # at.page.route("**/*", self.interceptor)  # перехват страницы
-        at.open()
-        at.click_login()
+        await at.open()
+        await at.click_login()
 
         # Страница Login
         at_login = LoginPage(page)
         # Нажали Continue
-        at_login.click_btn_continue()
+        await at_login.click_btn_continue()
 
         data_for_register_form = DATA_REGISTER_LOGIN_FULL.copy()
         data_for_login_form = DATA_LOGIN.copy()
 
         api = ApiStore(context)  # ApiStore(driver)
         at_create = LoginCreatePage(page)
-        tokens = at_create.csrftoken_create
-        instance = at_create.csrfinstance_create
+        tokens = await at_create.csrftoken_create()
+        instance = await at_create.csrfinstance_create()
         load_data(data_for_register_form, tokens, instance)
-        api.create_user(data_for_register_form)  # API Create
+        await api.create_user(data_for_register_form)  # API Create
 
-        at.page.wait_for_timeout(15_000)
-        at.open()
+        await at.page.wait_for_timeout(15_000)
+        await at.open()
 
-        at.click_login()
-        at_login.fill_login_form(data_for_login_form)
-        at_login.click_btn_login()
-        at.page.wait_for_timeout(15_000)
+        await at.click_login()
+        await at_login.fill_login_form(data_for_login_form)
+        await at_login.click_btn_login()
+        # at.page.wait_for_timeout(15_000)
 
         # at.click_login()
         # at_reg.click_btn_login()
@@ -75,23 +76,23 @@ class TestAT:
         #
         # at_reg.page.wait_for_timeout(2_000)
         # api.check_user()
-        at.open()
-        at.page.reload()
-        at.page.wait_for_timeout(5_000)
+        await at.open()
+        await at.page.reload()
+        await at.page.wait_for_timeout(5_000)
 
-    def test_02_create_web_login_api(self, context, page):  # driver
+    async def test_02_create_web_login_api(self, context, page):  # driver
         context.route("**/*", self.interceptor)  # перехват своих api + страницы
         # 1. Главная
         at = MainPage(page) # Основная страница
         print()
-        at.open()  # открываем основную страницу
-        at.click_login()  # Кликаем Login or Register
+        await at.open()  # открываем основную страницу
+        await at.click_login()  # Кликаем Login or Register
 
         # 2. Страница Login
         at_login = LoginPage(page) # Страница Login
-        at_login.check_url(www=False)
-        at_login.page.wait_for_load_state("networkidle")
-        at_login.click_btn_continue() # Нажали Continue
+        await at_login.check_url(www=False)
+        await at_login.page.wait_for_load_state("networkidle")
+        await at_login.click_btn_continue() # Нажали Continue
 
         # формируем данные
         data_for_form_register = DATA_REGISTER_LOGIN_FULL.copy()
@@ -99,19 +100,19 @@ class TestAT:
 
         # 3. Страница формы создания Login-а -> CreateLogin
         at_create = LoginCreatePage(page)
-        at_create.fill_login_create_form(data_for_form_register)
-        at_login.page.wait_for_load_state("networkidle")
-        at_create.click_btn_continue()
+        await at_create.fill_login_create_form(data_for_form_register)
+        await at_login.page.wait_for_load_state("networkidle")
+        await at_create.click_btn_continue()
 
-        at_create.page.wait_for_timeout(2_000)
+        await at_create.page.wait_for_timeout(2_000)
         # at_login.page.pause()
 
         # 4. Идём логиниться
-        at_login.open()
-        at_login.check_url(www=True)
+        await at_login.open()
+        await at_login.check_url(www=True)
 
-        tokens = at_login.csrftoken_login
-        instance = at_login.csrfinstance_login
+        tokens = await at_login.csrftoken_login()
+        instance = await at_login.csrfinstance_login()
         load_data(data_for_form_login, tokens, instance)  # в data_for_login_form прописываем token и instance
 
         # pprint(data_for_login_form, indent=4)
@@ -124,15 +125,15 @@ class TestAT:
 
         # 5 Login via API
         api = ApiStore(context)
-        api.login_user(data_for_form_login)
+        await api.login_user(data_for_form_login)
         # at.page.reload()
 
-        page.goto("/index.php?rt=account/account")
+        await at.open("/index.php?rt=account/account")
 
-        at_login.page.wait_for_timeout(5_000)
-        at_login.check_logined_via_cookie()
+        await at_login.page.wait_for_timeout(5_000)
+        await at_login.check_logined_via_cookie()
 
-    def test_03_at_create_api_login_web(self, context, page):  # driver
+    async def test_03_at_create_api_login_web(self, context, page):  # driver
         context.route("**/*", self.interceptor)  # перехват своих api + страницы
         # формируем данные
         data_for_register_form = DATA_REGISTER_LOGIN_FULL.copy()
@@ -141,65 +142,64 @@ class TestAT:
 
         # Сразу идём на нужную страницу
         at_create = LoginCreatePage(page)  # 3. Страница формы создания Login-а
-        at_create.open()
-        at_create.check_url(www=True)
-        tokens = at_create.csrftoken_create
-        instance = at_create.csrfinstance_create
+        await at_create.open()
+        await at_create.check_url(www=True)
+        tokens = await at_create.csrftoken_create()
+        instance = await at_create.csrfinstance_create()
         load_data(data_for_register_form, tokens, instance)
 
         # at_create.fill_login_create_form(data_for_register_form)
         # at_create.click_btn_continue()
 
         api = ApiStore(context)
-        api.create_user(data_for_register_form)
+        await api.create_user(data_for_register_form)
         # 5. Чекаем ошибки
-        api.check_html_for_errors(save_html=True)
+        await api.check_html_for_errors(save_html=True)
         # 6. Проверяем редирект в ЛК
         api.check_open()
         # 7. Если вернулась форма — возможно, тихая ошибка
-        api.check_reg_form(save_html=True)
+        await api.check_reg_form(save_html=True)
 
-        at_create.page.wait_for_timeout(5_000)
+        await at_create.page.wait_for_timeout(5_000)
 
         # Login via WEB
         at = MainPage(page) # 1. Главная
-        at.click_login()
+        await at.click_login()
         at_login = LoginPage(page) # 2. Страница Login
-        at_login.fill_login_form(data_for_login_form)
-        at_login.click_btn_login()
+        await at_login.fill_login_form(data_for_login_form)
+        await at_login.click_btn_login()
 
-    def test_04_at_create_api_login_api(self, context, page):  # driver
+    async def test_04_at_create_api_login_api(self, context, page):  # driver
         context.route("**/*", self.interceptor)  # перехват своих api + страницы
         # формируем данные
         data_for_form_register = DATA_REGISTER_LOGIN_FULL.copy()
-        data_for_form_login = DATA_LOGIN.copy()
         print()
 
         # Сразу идём на нужную страницу
         at_create = LoginCreatePage(page)  # 3. Страница формы создания Login-а -> CreateLogin
-        at_create.open()
-        at_create.check_url(www=True)
-        tokens = at_create.csrftoken_create
-        instance = at_create.csrfinstance_create
+        await at_create.open()
+        await at_create.check_url(www=True)
+        tokens = await at_create.csrftoken_create()
+        instance = await at_create.csrfinstance_create()
         load_data(data_for_form_register, tokens, instance)  # в data_for_register_form прописываем token и instance
-        at_create.page.wait_for_load_state("networkidle")
+        await at_create.page.wait_for_load_state("networkidle")
 
         # -= API =-
         api = ApiStore(context)
-        api.create_user(data_for_form_register)  # создаём пользователя по API
+        await api.create_user(data_for_form_register)  # создаём пользователя по API
         # Вместо fill_login_create_form
 
         print("_____ И вот ТУТ я Падаю _____")
         # 5. Чекаем ошибки
-        api.check_html_for_errors()
+        await api.check_html_for_errors()
         # 6. Проверяем редирект в ЛК
         api.check_open()
         # 7. Если вернулась форма — возможно, тихая ошибка
-        api.check_reg_form(save_html=True)
+        await api.check_reg_form(save_html=True)
 
         at = MainPage(page)  # 1. Главная
-        at.open(EP_BASE + EP_USER_CABINET)
-        at.check_url(EP_BASE + EP_USER_CABINET, www=True)
-        at.page.wait_for_timeout(5_000)
+        await at.open(EP_BASE + EP_USER_CABINET)
+        await at.check_url(EP_BASE + EP_USER_CABINET, www=True)
+        await at.page.wait_for_timeout(5_000)
         api.check_logined_via_cookie_api()
-        at.check_logined_via_cookie()
+        await at.check_logined_via_cookie()

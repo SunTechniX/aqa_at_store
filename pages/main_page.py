@@ -9,5 +9,5 @@ class MainPage(BasePage):
             "link", name="Login or register"
             )
 
-    def click_login(self):
-        self.btn_login.click()
+    async def click_login(self):
+        await self.btn_login.click()

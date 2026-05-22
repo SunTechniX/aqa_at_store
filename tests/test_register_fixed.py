@@ -13,7 +13,7 @@ test_register_fixed.py
 """
 import re
 import time
-from playwright.sync_api import Page
+from playwright.async_api import Page
 
 
 def extract_visible_errors(html: str) -> list[str]:

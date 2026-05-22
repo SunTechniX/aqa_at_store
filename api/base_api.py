@@ -1,5 +1,6 @@
 import time
-from playwright.sync_api import APIRequestContext
+import aiofiles
+from playwright.async_api import APIRequestContext
 
 from data.data_at_store import BASE_URL
 from helpers.utils import extract_error_text
@@ -19,29 +20,29 @@ class ApiBaseCtx:
         assert self.response.status == expected_status_code, \
             f"Ожидали код {expected_status_code}, получили {self.response.status}"
 
-    def get(self, endpoint: str, expected_status_code: int = 200):
-        self.response = self.session.get(url=endpoint) #, headers=headers_)
+    async def get(self, endpoint: str, expected_status_code: int = 200):
+        self.response = await self.session.get(url=endpoint) #, headers=headers_)
         self._check_status_code(expected_status_code)
         return self.response
 
-    def post(self, endpoint: str, data_json: dict = None,
+    async def post(self, endpoint: str, data_json: dict = None,
              expected_status_code: int = 200):
         assert data_json is not None, "Тело не заполнено!"
         print(f"\n{data_json=}")
         try:
             # headers_ = {"Content-Type": "application/x-www-form-urlencoded"}
-            self.response = self.session.post(url=endpoint, data=data_json)  # , headers=headers_)
+            self.response = await self.session.post(url=endpoint, data=data_json)  # , headers=headers_)
         except ConnectionError as e:
             print("\n=== No Connection ===")
             raise AssertionError(e)
         self._check_status_code(expected_status_code)
 
-    def post_form(self, endpoint: str, data_json: dict = None,
+    async def post_form(self, endpoint: str, data_json: dict = None,
                   expected_status_code: int = 200):
         assert data_json is not None, "Тело не заполнено!"
         print(f"\n{data_json=}")
         # headers_ = {"Content-Type": "application/x-www-form-urlencoded"} - само вставится при использовании form=
-        self.response = self.session.post(url=endpoint, form=data_json)  # , headers=headers_)
+        self.response = await self.session.post(url=endpoint, form=data_json)  # , headers=headers_)
         self._check_status_code(expected_status_code)
         return self.response
 
@@ -74,10 +75,10 @@ class ApiBaseCtx:
     #     self._check_status_code(expected_status_code)
     #     return self.response
 
-    def close(self):
+    async def close(self):
         pass
 
-    def check_html_for_errors(self, save_html: bool = False):
+    async def check_html_for_errors(self, save_html: bool = False):
         """ Ищем ошибки на Web-странице """
         # errors = extract_visible_errors(self.response.text())
         # if errors:
@@ -91,20 +92,22 @@ class ApiBaseCtx:
         if error_text:
             print(f"❌ ОШИБКА СЕРВЕРА: [[ {error_text} ]]")
             if save_html:  # Сохраняем HTML для глубокой отладки (если нужно)
-                with open(f"error_on_web_{self.timestamp}.html", "w",
-                          encoding="utf-8") as f:
-                    f.write(self.response.text())
+                async with aiofiles.open(
+                        f"error_on_web_{self.timestamp}.html", "w",
+                        encoding="utf-8") as f:
+                    await f.write(self.response.text())
                 print(f"💾 Полный HTML сохранён в error_on_web_{self.timestamp}.html")
             raise AssertionError(f"Registration failed: [[ {error_text} ]]")
 
-    def check_reg_form(self, save_html: bool = False):
+    async def check_reg_form(self, save_html: bool = False):
         """ Если вернулась форма — возможно, тихая ошибка """
         if "AccountFrm" in self.response.text():
             print("⚠️ Вернулась форма регистрации — сохраняем для анализа")
             if save_html:
-                with open(f"error_on_reg_form_{self.timestamp}.html", "w",
-                          encoding="utf-8") as f:
-                    f.write(self.response.text())
+                async with aiofiles.open(
+                        f"error_on_reg_form_{self.timestamp}.html", "w",
+                        encoding="utf-8") as f:
+                    await f.write(self.response.text())
 
     def check_logined_via_cookie_api(self):
         """
