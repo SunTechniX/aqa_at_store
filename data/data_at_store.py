@@ -11,7 +11,7 @@ BASE_URL_NO_WWW = "https://automationteststore.com"
 U_NAME = "mama_p_papa"
 U_PASS = "mama_papa"
 # E_MAIL = "mama@papa.ru"
-E_MAIL = f"{U_NAME}@gmail.com"                # ← Полный email
+E_MAIL = f"{U_NAME}@gmail.com"
 U_PASS = "Aa1!StrongPass99"
 
 DATA_REGISTER_LOGIN = {
