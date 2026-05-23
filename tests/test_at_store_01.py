@@ -1,4 +1,3 @@
-import asyncio
 from api.store_api import ApiStore
 from api.urls import EP_BASE, EP_USER_CABINET
 from data.data_at_store import DATA_REGISTER_LOGIN, DATA_LOGIN, \
