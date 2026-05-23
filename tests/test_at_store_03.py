@@ -36,8 +36,8 @@ def test_api_login_automationteststore(page: Page):
 
     # 6. 🔥 Надёжная проверка: кука 'customer' = авторизация успешна
     cookies = page.context.cookies()
-    assert any(c['name'] == 'customer' for c in
-               cookies), "Нет куки 'customer' — логин не прошёл"
+    assert any(c['name'] == 'customer' for c in cookies), \
+        "Нет куки 'customer' — логин не прошёл"
 
     # 7. Опционально: визуальная проверка (если нужна)
     # Если хочешь проверить интерфейс — раскомментируй:

@@ -46,17 +46,19 @@ class LoginCreatePage(BasePage):
 
     async def get_hidden_input_value(self, name: str) -> str:
         """ Извлекает значение из hidden input по имени """
-        self.page.wait_for_selector(f"[name='{name}']", state="attached")
-        return self.page.locator(f"[name='{name}']").first.get_attribute("value")
+        await self.page.wait_for_selector(f"[name='{name}']", state="attached")
+        return await self.page.locator(f"[name='{name}']").first.get_attribute("value")
 
     # @property
     async def csrftoken_create(self):
-        return await self.get_hidden_input_value("csrftoken")
+        value = await self.get_hidden_input_value("csrftoken")
+        return value
         # return self._get_value(self.field_csrftoken_create)
 
     # @property
     async def csrfinstance_create(self):
-        return await self.get_hidden_input_value("csrfinstance")
+        value = await self.get_hidden_input_value("csrfinstance")
+        return value
         # return self._get_value(self.field_csrfinst_create)
 
     # @property

@@ -189,7 +189,6 @@ class TestAT:
         await api.create_user(data_for_form_register)  # создаём пользователя по API
         # Вместо fill_login_create_form
 
-        print("_____ И вот ТУТ я Падаю _____")
         # 5. Чекаем ошибки
         await api.check_html_for_errors()
         # 6. Проверяем редирект в ЛК
@@ -201,5 +200,5 @@ class TestAT:
         await at.open(EP_BASE + EP_USER_CABINET)
         await at.check_url(EP_BASE + EP_USER_CABINET, www=True)
         await at.page.wait_for_timeout(5_000)
-        api.check_logined_via_cookie_api()
+        await api.check_logined_via_cookie_api()
         await at.check_logined_via_cookie()

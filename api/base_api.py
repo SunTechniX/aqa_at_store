@@ -88,7 +88,7 @@ class ApiBaseCtx:
         #     with open(f"error_on_web_{self.timestamp}.html", "w", encoding="utf-8") as f:
         #         f.write(self.response.text())
         #     assert False, f"Registration failed: {errors[0]}"
-        error_text = extract_error_text(self.response.text())
+        error_text = extract_error_text(await self.response.text())
         if error_text:
             print(f"❌ ОШИБКА СЕРВЕРА: [[ {error_text} ]]")
             if save_html:  # Сохраняем HTML для глубокой отладки (если нужно)
@@ -101,7 +101,7 @@ class ApiBaseCtx:
 
     async def check_reg_form(self, save_html: bool = False):
         """ Если вернулась форма — возможно, тихая ошибка """
-        if "AccountFrm" in self.response.text():
+        if "AccountFrm" in await self.response.text():
             print("⚠️ Вернулась форма регистрации — сохраняем для анализа")
             if save_html:
                 async with aiofiles.open(
@@ -109,11 +109,11 @@ class ApiBaseCtx:
                         encoding="utf-8") as f:
                     await f.write(self.response.text())
 
-    def check_logined_via_cookie_api(self):
+    async def check_logined_via_cookie_api(self):
         """
         проверка: куки 'customer' - есть
         - значит авторизация успешна
         """
-        cookies = self.ctx.cookies()
+        cookies = await self.ctx.cookies()
         assert any(c['name'] == 'customer' for c in cookies), \
             "Нет куки 'customer' — логин не прошёл"
