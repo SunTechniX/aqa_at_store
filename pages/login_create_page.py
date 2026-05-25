@@ -1,4 +1,4 @@
-from playwright.sync_api import expect
+from playwright.async_api import expect
 
 from api.urls import EP_BASE, EP_USER_CREATE
 from data.data_at_store import DATA_REGISTER_LOGIN, \
@@ -111,5 +111,5 @@ class LoginCreatePage(BasePage):
         await self.chkbox_agree.check()
 
     async def click_btn_continue(self):
-        expect(self.btn_continue).to_be_visible()
+        await expect(self.btn_continue).to_be_visible()
         await self.btn_continue.click()

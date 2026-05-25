@@ -12,9 +12,9 @@ from pages.main_page import MainPage
 class TestAT:
 
     @staticmethod
-    def interceptor(route):
-        if route.request.resource_type not in ("font", "image", "script",
-                                               "stylesheet", "xhr", "other"):
+    async def interceptor(route):
+        if route.request.resource_type not in (
+                "font", "image", "script", "stylesheet", "xhr", "other"):
             print(f"🔍 {route.request.method} {route.request.url} [{route.request.resource_type}]")
             if route.request.resource_type == "document":
                 if hasattr(route.request, "body") and route.request.body:
@@ -29,7 +29,7 @@ class TestAT:
                     print(parse_qs(route.request.post_data))
                 if "create" in route.request.url:
                     print(route.request.__dict__)
-        route.continue_()
+        await route.continue_()
 
     def test_01_at_login_simple(self, context, page):  # driver
         """ Просто Web-логин с имеющимся пользователем """
@@ -131,10 +131,10 @@ class TestAT:
         await api.login_user(data_for_form_login)
         # at.page.reload()
 
-        page.goto("/index.php?rt=account/account")
+        await page.goto("/index.php?rt=account/account")
 
-        at_login.page.wait_for_timeout(5_000)
-        at_login.check_logined_via_cookie()
+        await at_login.page.wait_for_timeout(5_000)
+        await at_login.check_logined_via_cookie()
 
     def test_03_at_create_api_login_web(self, context, page):  # driver
         context.route("**/*", self.interceptor)  # перехват своих api + страницы

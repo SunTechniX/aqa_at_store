@@ -1,5 +1,6 @@
+import aiofiles
 import time
-from playwright.sync_api import APIRequestContext
+from playwright.async_api import APIRequestContext
 
 from data.data_at_store import BASE_URL
 from helpers.utils import extract_error_text
@@ -91,9 +92,9 @@ class ApiBaseCtx:
         if error_text:
             print(f"❌ ОШИБКА СЕРВЕРА: [[ {error_text} ]]")
             if save_html:  # Сохраняем HTML для глубокой отладки (если нужно)
-                with open(f"error_on_web_{self.timestamp}.html", "w",
+                async with aiofiles.open(f"error_on_web_{self.timestamp}.html", "w",
                           encoding="utf-8") as f:
-                    f.write(self.response.text())
+                    await f.write(self.response.text())
                 print(f"💾 Полный HTML сохранён в error_on_web_{self.timestamp}.html")
             raise AssertionError(f"Registration failed: [[ {error_text} ]]")
 
@@ -102,15 +103,15 @@ class ApiBaseCtx:
         if "AccountFrm" in self.response.text():
             print("⚠️ Вернулась форма регистрации — сохраняем для анализа")
             if save_html:
-                with open(f"error_on_reg_form_{self.timestamp}.html", "w",
+                async with aiofiles.open(f"error_on_reg_form_{self.timestamp}.html", "w",
                           encoding="utf-8") as f:
-                    f.write(self.response.text())
+                    await f.write(self.response.text())
 
     async def check_logined_via_cookie_api(self):
         """
         проверка: куки 'customer' - есть
         - значит авторизация успешна
         """
-        cookies = self.ctx.cookies()
+        cookies = await self.ctx.cookies()
         assert any(c['name'] == 'customer' for c in cookies), \
             "Нет куки 'customer' — логин не прошёл"

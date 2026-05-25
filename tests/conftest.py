@@ -1,3 +1,4 @@
+import time
 import pytest
 from playwright.async_api import async_playwright, Browser
 
@@ -7,7 +8,10 @@ from data.data_at_store import BASE_URL
 @pytest.fixture
 async def driver():
     async with async_playwright() as drv:
+        start = time.time()
         yield drv
+        end = time.time()
+        print(f"\n======== Время выполнения: {end - start} =========")
 
 @pytest.fixture
 async def context(driver):
