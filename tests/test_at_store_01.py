@@ -1,3 +1,4 @@
+import pytest
 from api.store_api import ApiStore
 from api.urls import EP_BASE, EP_USER_CABINET
 from data.data_at_store import DATA_REGISTER_LOGIN, DATA_LOGIN, \
@@ -78,6 +79,10 @@ class TestAT:
         at.open()
         at.page.reload()
         at.page.wait_for_timeout(5_000)
+
+    @pytest.mark.asyncio
+    def test_00(self, context, page):  # driver
+        pass
 
     def test_02_create_web_login_api(self, context, page):  # driver
         context.route("**/*", self.interceptor)  # перехват своих api + страницы
