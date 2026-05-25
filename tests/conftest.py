@@ -1,3 +1,5 @@
+import time
+
 import pytest
 from playwright.sync_api import sync_playwright, Browser
 
@@ -7,7 +9,10 @@ from data.data_at_store import BASE_URL
 @pytest.fixture
 def driver():
     with sync_playwright() as drv:
+        start = time.time()
         yield drv
+        end = time.time()
+        print(f"\n======== Время выполнения: {end - start} =========")
 
 @pytest.fixture
 def context(driver):

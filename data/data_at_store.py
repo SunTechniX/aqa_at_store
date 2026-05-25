@@ -5,11 +5,11 @@ fake = Faker()
 BASE_URL = "https://www.automationteststore.com"
 BASE_URL_NO_WWW = "https://automationteststore.com"
 
-# U_NAME = fake.user_name().replace(" ", "_").lower()
+U_NAME = fake.user_name().replace(" ", "_").lower()
 #U_PASS = fake.password("")
 # E_MAIL = fake.email()
-U_NAME = "mama_p_papa"
-U_PASS = "mama_papa"
+# U_NAME = "mama_p_papa"
+# U_PASS = "mama_papa"
 # E_MAIL = "mama@papa.ru"
 E_MAIL = f"{U_NAME}@gmail.com"
 U_PASS = "Aa1!StrongPass99"
