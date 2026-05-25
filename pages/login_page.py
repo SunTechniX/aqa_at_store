@@ -22,29 +22,29 @@ class LoginPage(BasePage):
         self.field_csrftoken_login = self.page.locator("#loginFrm input[name='csrftoken']")
         self.field_csrfinst_login = self.page.locator("#loginFrm input[name='csrfinstance']")
 
-    def open(self, url=EP_BASE + EP_USER_LOGIN):
-        self.page.goto(url)
+    async def open(self, url=EP_BASE + EP_USER_LOGIN):
+        await self.page.goto(url)
 
     def check_url(self, endpoint=EP_BASE + EP_USER_LOGIN, www: bool = False):
         super().check_url(endpoint, www)
 
-    def fill_login_form(self, data_dict: dict = DATA_LOGIN):
-        self.field_name.fill(data_dict["loginname"])
-        self.field_pass.fill(data_dict["password"])
+    async def fill_login_form(self, data_dict: dict = DATA_LOGIN):
+        await self.field_name.fill(data_dict["loginname"])
+        await self.field_pass.fill(data_dict["password"])
 
-    def click_btn_login(self):
-        self.btn_login.click()
+    async def click_btn_login(self):
+        await self.btn_login.click()
 
-    def click_btn_continue(self):
-        self.btn_continue.click()
+    async def click_btn_continue(self):
+        await self.btn_continue.click()
 
-    def _get_value(self, loc) -> str | tuple[str]:
-        if len(loc.all()) > 1:
+    async def _get_value(self, loc) -> str | tuple[str]:
+        if len(await loc.all()) > 1:
             items = []
-            for item in loc.all():
+            for item in await loc.all():
                 items.append(item.get_attribute("value", timeout=7_000))
         else:
-            items = loc.get_attribute("value", timeout=7_000)
+            items = await loc.get_attribute("value", timeout=7_000)
         return items
 
     # @property
@@ -55,10 +55,10 @@ class LoginPage(BasePage):
     # def csrfinstance_create(self):
     #     return self._get_value(self.field_csrfinst_create)
 
-    @property
-    def csrftoken_login(self):
-        return self._get_value(self.field_csrftoken_login)
+    # @property
+    async def csrftoken_login(self):
+        return await self._get_value(self.field_csrftoken_login)
 
-    @property
-    def csrfinstance_login(self):
-        return self._get_value(self.field_csrfinst_login)
+    # @property
+    async def csrfinstance_login(self):
+        return await self._get_value(self.field_csrfinst_login)

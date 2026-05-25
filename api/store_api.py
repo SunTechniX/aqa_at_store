@@ -30,10 +30,10 @@ class ApiStore(ApiBaseCtx):
         self.response = self.get(endpoint, expected_status_code=200)
         return self.response
 
-    def login_user(self, data_json: dict):
+    async def login_user(self, data_json: dict):
         endpoint = EP_BASE + EP_USER_LOGIN
         print(f"🔍 POST-form Login: {endpoint=}")
-        self.response = self.post_form(endpoint, data_json=data_json,
+        self.response = await self.post_form(endpoint, data_json=data_json,
                                        expected_status_code=200)  # 302
         return self.response
 

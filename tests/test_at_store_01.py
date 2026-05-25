@@ -80,23 +80,22 @@ class TestAT:
         at.page.reload()
         at.page.wait_for_timeout(5_000)
 
-    @pytest.mark.asyncio
-    def test_00(self, context, page):  # driver
+    async def test_00(self, context, page):  # driver
         pass
 
-    def test_02_create_web_login_api(self, context, page):  # driver
+    async def test_02_create_web_login_api(self, context, page):  # driver
         context.route("**/*", self.interceptor)  # перехват своих api + страницы
         # 1. Главная
         at = MainPage(page) # Основная страница
         print()
-        at.open()  # открываем основную страницу
-        at.click_login()  # Кликаем Login or Register
+        await at.open()  # открываем основную страницу
+        await at.click_login()  # Кликаем Login or Register
 
         # 2. Страница Login
         at_login = LoginPage(page) # Страница Login
         at_login.check_url(www=False)
-        at_login.page.wait_for_load_state("networkidle")
-        at_login.click_btn_continue() # Нажали Continue
+        await at_login.page.wait_for_load_state("networkidle")
+        await at_login.click_btn_continue() # Нажали Continue
 
         # формируем данные
         data_for_form_register = DATA_REGISTER_LOGIN_FULL.copy()
@@ -104,19 +103,19 @@ class TestAT:
 
         # 3. Страница формы создания Login-а -> CreateLogin
         at_create = LoginCreatePage(page)
-        at_create.fill_login_create_form(data_for_form_register)
-        at_login.page.wait_for_load_state("networkidle")
-        at_create.click_btn_continue()
+        await at_create.fill_login_create_form(data_for_form_register)
+        await at_login.page.wait_for_load_state("networkidle")
+        await at_create.click_btn_continue()
 
-        at_create.page.wait_for_timeout(2_000)
+        await at_create.page.wait_for_timeout(2_000)
         # at_login.page.pause()
 
         # 4. Идём логиниться
-        at_login.open()
+        await at_login.open()
         at_login.check_url(www=True)
 
-        tokens = at_login.csrftoken_login
-        instance = at_login.csrfinstance_login
+        tokens = at_login.csrftoken_login()
+        instance = at_login.csrfinstance_login()
         load_data(data_for_form_login, tokens, instance)  # в data_for_login_form прописываем token и instance
 
         # pprint(data_for_login_form, indent=4)
@@ -129,7 +128,7 @@ class TestAT:
 
         # 5 Login via API
         api = ApiStore(context)
-        api.login_user(data_for_form_login)
+        await api.login_user(data_for_form_login)
         # at.page.reload()
 
         page.goto("/index.php?rt=account/account")

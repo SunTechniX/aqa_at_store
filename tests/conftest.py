@@ -1,5 +1,5 @@
 import pytest
-from playwright.async_api import async_playwright, Browser, Page
+from playwright.async_api import async_playwright, Browser
 
 from data.data_at_store import BASE_URL
 
