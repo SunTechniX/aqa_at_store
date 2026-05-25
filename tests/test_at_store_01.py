@@ -79,6 +79,10 @@ class TestAT:
         await at.page.reload()
         await at.page.wait_for_timeout(5_000)
 
+    async def test_00(self, context, page):  # driver
+        pass
+
+
     async def test_02_create_web_login_api(self, context, page):  # driver
         context.route("**/*", self.interceptor)  # перехват своих api + страницы
         # 1. Главная
